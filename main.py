@@ -1,26 +1,51 @@
+
+from empleado import Empleado
+from tecnico import Tecnico
+from proyecto import Proyecto
 from database import ConexionBD
-from models import Empleado, Tecnico, Proyecto
+
 
 def main():
-    print("ECOTECH SOLUTIONS, SISTEMA DE GESTION")
-    
-    print("\nPrueba de conexión a base de datos")
+    print("ECOTECH SOLUTIONS - SISTEMA DE GESTION")
+
+    print("\nPrueba de conexion a la base de datos")
+
     gestor_bd = ConexionBD()
-    gestor_bd.inicializar_tablas()
+    conexion_exitosa = gestor_bd.inicializar_tablas()
 
-    print("\nCreacion de Objetos y encapsulamiento")
-    emp_base = Empleado(1, "Ana Gómez", "agomez@ecotech.cl")
-    tec_esp = Tecnico(2, "Carlos Ruiz", "cruiz@ecotech.cl", "Eficiencia energetica")
+    if not conexion_exitosa:
+        print("No se pudo completar la prueba de conexion")
+        return
 
-    print(emp_base.obtener_detalles())
-    print(tec_esp.obtener_detalles())
+    print("\nCreacion de empleados")
 
-    print("\nAsignacion de Recursos a proyecto")
-    proyecto_opt = Proyecto(101, "Optimizacion de planta solar")
-    proyecto_opt.agregar_integrante(emp_base)
-    proyecto_opt.agregar_integrante(tec_esp)
+    empleado = Empleado(
+        1,
+        "Ana Gomez",
+        "agomez@ecotech.cl"
+    )
 
-    proyecto_opt.listar_equipo()
+    tecnico = Tecnico(
+        2,
+        "Carlos Ruiz",
+        "cruiz@ecotech.cl",
+        "Eficiencia energetica"
+    )
+
+    print(empleado.obtener_detalles())
+    print(tecnico.obtener_detalles())
+
+    print("\nAsignacion de empleados al proyecto")
+
+    proyecto = Proyecto(
+        101,
+        "Optimizacion de planta solar"
+    )
+
+    proyecto.agregar_integrante(empleado)
+    proyecto.agregar_integrante(tecnico)
+    proyecto.listar_equipo()
+
 
 if __name__ == "__main__":
     main()

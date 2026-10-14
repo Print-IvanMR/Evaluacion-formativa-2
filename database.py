@@ -1,5 +1,5 @@
 import sqlite3
-from sqlite3 import Error
+
 
 class ConexionBD:
     def __init__(self, db_file="ecotech.db"):
@@ -9,40 +9,54 @@ class ConexionBD:
     def conectar(self):
         try:
             self.__conexion = sqlite3.connect(self.__db_file)
-            print(f"Conexion establecida con la base de datos '{self.__db_file}'.")
+            print(
+                f"Conexión establecida con la base de datos "
+                f"'{self.__db_file}'."
+            )
             return self.__conexion
-        except Error as e:
-            print(f"Fallo en la conexion: {e}")
+        except sqlite3.Error as error:
+            print(f"Error de conexión: {error}")
             return None
 
     def inicializar_tablas(self):
-        conn = self.conectar()
-        if conn is not None:
-            try:
-                cursor = conn.cursor()
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS empleados (
-                        id INTEGER PRIMARY KEY,
-                        nombre TEXT NOT NULL,
-                        email TEXT NOT NULL,
-                        tipo TEXT NOT NULL,
-                        especialidad TEXT
-                    )
-                """)
-                cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS proyectos (
-                        id INTEGER PRIMARY KEY,
-                        nombre TEXT NOT NULL
-                    )
-                """)
-                conn.commit()
-                print("Tablas verificadas y listas")
-            except Error as e:
-                print(f"No se pudieron crear las tablas: {e}")
-            finally:
-                self.cerrar()
+        conexion = self.conectar()
+
+        if conexion is None:
+            return False
+
+        try:
+            cursor = conexion.cursor()
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS empleados (
+                    id INTEGER PRIMARY KEY,
+                    nombre TEXT NOT NULL,
+                    email TEXT NOT NULL,
+                    tipo TEXT NOT NULL,
+                    especialidad TEXT
+                )
+            """)
+
+            cursor.execute("""
+                CREATE TABLE IF NOT EXISTS proyectos (
+                    id INTEGER PRIMARY KEY,
+                    nombre TEXT NOT NULL
+                )
+            """)
+
+            conexion.commit()
+            print("Tablas listas.")
+            return True
+
+        except sqlite3.Error as error:
+            print(f"error al crear las tablas: {error}")
+            return False
+
+        finally:
+            self.cerrar()
 
     def cerrar(self):
-        if self.__conexion:
+        if self.__conexion is not None:
             self.__conexion.close()
-            print("Conexion cerrada.")
+            self.__conexion = None
+            print("Conexion cerrada")
